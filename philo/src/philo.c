@@ -51,11 +51,11 @@ void	*prueba(void *ph)
 	return (NULL);
 }
 
-void	read_args(t_data *pr, char *argv[])
+int	read_args(t_data *pr, char *argv[])
 {
 	pr->p = malloc(sizeof(t_program));
 	if (!pr->p)
-		return ;
+		return (1);
 	pr->p->pnum = ft_atoi(argv[1]);
 	pr->p->time_die = ft_atoi(argv[2]);
 	pr->p->time_eat = ft_atoi(argv[3]);
@@ -65,6 +65,7 @@ void	read_args(t_data *pr, char *argv[])
 	pr->p->time = my_time();
 	pr->p->ph_eated = 0;
 	pr->p->stop = 0;
+	return (0);
 }
 
 int	my_init(t_data *pr)
@@ -75,12 +76,8 @@ int	my_init(t_data *pr)
 	pr->ph = malloc(sizeof(t_philo) * (pr->p->pnum));
 	if (!pr->ph)
 		return (1);
-	pr->p->mut = malloc(sizeof(pthread_mutex_t) * (pr->p->pnum));
-	if (!pr->p->mut)
+	if (my_mutex_init(pr))
 		return (1);
-	while (i < pr->p->pnum)
-		pthread_mutex_init(&pr->p->mut[i++], NULL);
-	i = 0;
 	while (i < pr->p->pnum)
 	{
 		pr->ph[i].id = i + 1;
@@ -98,24 +95,19 @@ int	my_init(t_data *pr)
 int	main(int argc, char *argv[])
 {
 	t_data	*pr;
-	int		ret;
 
 	if (argc < 5 || argc >= 7)
 		return (my_exit());
-	ret = 0;
 	pr = malloc(sizeof(t_data));
 	if (!pr)
 		return (my_exit());
-	ret = check_args(argv);
-	if (ret)
-	{
-		free(pr);
-		return (my_exit());
-	}
-	read_args(pr, argv);
-	my_init(pr);
+	if (check_args(argv))
+		return (my_exit_and_free(pr));
+	if (read_args(pr, argv))
+		return (my_exit_and_free(pr));
+	if (my_init(pr))
+		return (my_exit_and_free(pr));
 	my_end(pr, argv);
 	my_free(pr);
-	free(pr);
 	return (0);
 }

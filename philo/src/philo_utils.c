@@ -1,11 +1,5 @@
 #include "philo.h"
 
-int	my_exit(void)
-{
-	ft_putstr_fd("Error.\n", 2);
-	return (1);
-}
-
 unsigned long	my_time(void)
 {
 	struct timeval	time;
@@ -59,4 +53,21 @@ void	my_free(t_data *pr)
 	free(pr->p->mut);
 	free(pr->p);
 	free(pr->ph);
+	free(pr);
+}
+
+int	my_mutex_init(t_data *pr)
+{
+	int	i;
+
+	i = 0;
+	pr->p->mut = malloc(sizeof(pthread_mutex_t) * (pr->p->pnum));
+	if (!pr->p->mut)
+	{
+		free(pr->ph);
+		return (1);
+	}
+	while (i < pr->p->pnum)
+		pthread_mutex_init(&pr->p->mut[i++], NULL);
+	return (0);
 }

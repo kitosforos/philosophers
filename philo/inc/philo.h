@@ -45,10 +45,15 @@ int				is_number(char *arg);
 
 //philo_utils.c
 
-int				my_exit(void);
 unsigned long	my_time(void);
 unsigned long	program_time(t_program *pr);
 int				check_args(char *argv[]);
 void			my_free(t_data *pr);
+int				my_mutex_init(t_data *pr);
+
+//my_exit.c
+
+int				my_exit(void);
+int				my_exit_and_free(t_data	*pr);
 
 #endif
