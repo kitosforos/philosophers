@@ -52,7 +52,7 @@ int	is_number(char *arg)
 	i = 0;
 	while (arg[i] != 0)
 	{
-		if ((arg[i] < '0' || arg[i] > '9') && arg[i] != '-')
+		if ((arg[i] < '0' || arg[i] > '9'))
 			return (1);
 		i++;
 	}

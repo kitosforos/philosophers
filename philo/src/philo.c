@@ -29,23 +29,24 @@ void	*prueba(void *ph)
 	t_philo	*p;
 
 	p = (t_philo *)ph;
-	if ((p->id - 1) % 2 != 0)
-		usleep(10);
 	while (1 && p->var->stop == 0)
 	{
 		pthread_mutex_lock(&p->var->mut[p->id - 1]);
+		if (p->var->stop == 1)
+			break ;
 		printf("%ldms %d has taken a fork\n", program_time(p->var), p->id);
+		if (p->var->pnum == 1)
+			break ;
 		pthread_mutex_lock(&p->var->mut[p->id % (p->var->pnum)]);
-		printf("%ldms %d has taken a fork\n", program_time(p->var), (p->id));
-		printf("%ldms %d is eating\n", program_time(p->var), p->id);
-		usleep(p->var->time_eat * 1000);
-		p->last_meal = my_time();
-		p->total_ate++;
-		usleep(1);
-		pthread_mutex_unlock(&p->var->mut[p->id - 1]);
-		pthread_mutex_unlock(&p->var->mut[p->id % (p->var->pnum)]);
+		if (p->var->stop == 1)
+			break ;
+		prueba2(p);
+		if (p->var->stop == 1)
+			break ;
 		printf("%ldms %d is sleeping\n", program_time(p->var), (p->id));
 		usleep(p->var->time_sleep * 1000);
+		if (p->var->stop == 1)
+			break ;
 		printf("%ldms %d is thinking\n", program_time(p->var), p->id);
 	}
 	return (NULL);
@@ -109,5 +110,6 @@ int	main(int argc, char *argv[])
 		return (my_exit_and_free(pr));
 	my_end(pr, argv);
 	my_free(pr);
+	free(pr);
 	return (0);
 }

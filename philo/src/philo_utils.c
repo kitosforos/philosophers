@@ -39,23 +39,6 @@ int	check_args(char *argv[])
 	return (0);
 }
 
-void	my_free(t_data *pr)
-{
-	int	i;
-
-	i = 0;
-	pr->p->stop = 1;
-	while (i < pr->p->pnum)
-	{
-		pthread_mutex_destroy(&pr->p->mut[i]);
-		pthread_join(pr->ph[i++].t, NULL);
-	}
-	free(pr->p->mut);
-	free(pr->p);
-	free(pr->ph);
-	free(pr);
-}
-
 int	my_mutex_init(t_data *pr)
 {
 	int	i;
@@ -70,4 +53,17 @@ int	my_mutex_init(t_data *pr)
 	while (i < pr->p->pnum)
 		pthread_mutex_init(&pr->p->mut[i++], NULL);
 	return (0);
+}
+
+void	prueba2(t_philo *p)
+{
+	if (p->var->stop == 1)
+		return ;
+	printf("%ldms %d has taken a fork\n", program_time(p->var), (p->id));
+	printf("%ldms %d is eating\n", program_time(p->var), p->id);
+	usleep(p->var->time_eat * 1000);
+	p->last_meal = my_time();
+	p->total_ate++;
+	pthread_mutex_unlock(&p->var->mut[p->id - 1]);
+	pthread_mutex_unlock(&p->var->mut[p->id % (p->var->pnum)]);
 }
